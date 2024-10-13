@@ -1,5 +1,3 @@
-#+title: readme
-
 My reaper scripts.
 
 * auto_show
