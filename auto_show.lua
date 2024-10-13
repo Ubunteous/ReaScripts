@@ -1,9 +1,34 @@
+-- -------------------- --
+--    [[ VARIABLES ]]   --
+-- -------------------- --
+
 -- for tests only
--- script_duration = 3; startclocktime = reaper.time_precise()
+-- local script_duration = 3; local startclocktime = reaper.time_precise()
+
+local start_time = os.time()
+local last_time = start_time
+local refresh_delay = .75 -- in seconds
 
 -- you may want to adjust these values depending on your monitor size
--- they control the positions around which the mixer (dis)appears and bumps the mouse up
-local trigger_height_ratio, mixer_height_ratio, vertical_correction_ratio = .9, .4, .33
+local trigger_height_ratio = .9 -- position where the mixer appears
+local mixer_height_ratio = .4 -- position where the mixer disappears
+local vertical_correction_ratio = .33 -- bumps the mouse up
+
+-- -------------------- --
+--    [[ FUNCTIONS ]]   --
+-- -------------------- --
+
+function sleep(n)
+   -- return false if called before n seconds (to save cpu cycle)
+   local new_time = os.time()
+
+   if new_time - last_time >= n then
+      last_time = new_time
+      return true
+   end
+
+   return false
+end
 
 function SetCommandState(set)
    is_new_value, filename, sec, cmd, mode, resolution, val = reaper.get_action_context()
@@ -46,6 +71,12 @@ function isMainWindowFocused()
 end
 
 function updateMixer()
+   -- toggle the mixer's visibility
+   if not sleep(refresh_delay) then
+      reaper.defer(updateMixer)
+      return nil
+   end
+
    x, y = reaper.GetMousePosition()
    state = reaper.GetToggleCommandState(40078)
    
