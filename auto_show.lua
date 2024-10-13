@@ -25,12 +25,38 @@ function getKeyPos(window_height)
    return trigger_height, mixer_height, vertical_correction
 end
 
+function isMainWindowFocused()
+   -- verification necessary so that we do not get docks popping up when we are browsing menus
+   HWND_WindowFocus = reaper.JS_Window_GetFocus()
+   parent_WindowFocus = reaper.JS_Window_GetParent(HWND_WindowFocus)
+   match = ".*REAPER.*" -- perhaps ".*REAPER.*)" would be better
+
+   for _, window in ipairs({ HWND_WindowFocus, parent_WindowFocus }) do
+      if window then
+	 window_name = reaper.JS_Window_GetTitle(window)
+	 -- reaper.ShowConsoleMsg("\n Window: " .. tostring(window_name) .. "(" .. tostring(window) .. ") ")
+
+	 if string.match(window_name, match) then
+	    return true
+	 end
+      end
+   end
+
+   return nil
+end
+
 function updateMixer()
    x, y = reaper.GetMousePosition()
    state = reaper.GetToggleCommandState(40078)
    
    window_height = GetClientBounds(reaper.GetMainHwnd()) -- full = v(70, 1076)
    trigger_height, mixer_height, vertical_correction = getKeyPos(window_height)
+
+   if isMainWindowFocused() ~= true then
+      -- intentional behaviour: "pause" dock state if mouse outside main window
+      reaper.defer(updateMixer)
+      return nil
+   end
    
    if state == 0 and y > trigger_height and window_height > 500 then
       reaper.Main_OnCommand(40078, 0)
