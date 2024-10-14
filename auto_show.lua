@@ -9,10 +9,13 @@ local start_time = os.time()
 local last_time = start_time
 local refresh_delay = .75 -- in seconds
 
--- you may want to adjust these values depending on your monitor size
-local trigger_height_ratio = .9 -- position where the mixer appears
-local mixer_height_ratio = .4 -- position where the mixer disappears
-local vertical_correction_ratio = .33 -- bumps the mouse up
+-- -- you may want to adjust these values depending on your monitor size
+-- local trigger_height_ratio = .9 -- position where the mixer appears
+-- local mixer_height_ratio = .4 -- position where the mixer disappears
+-- local vertical_correction_ratio = .33 -- bumps the mouse up
+
+-- my bottom dock. this id may differ for other people
+local mixer_id = 1
 
 -- -------------------- --
 --    [[ FUNCTIONS ]]   --
@@ -41,13 +44,34 @@ function GetClientBounds(hwnd)
    return bottom-top -- , top, bottom
 end
 
-function getKeyPos(window_height)
-   -- hardcoded values to update dock popup/hide state
-   -- TODO: improve later by making them depend directly on the dock's dimensions
-   trigger_height = math.floor(window_height * trigger_height_ratio) -- 900
-   mixer_height = math.floor(window_height * mixer_height_ratio) -- 425
-   vertical_correction = math.floor(window_height * vertical_correction_ratio) -- 350
-   return trigger_height, mixer_height, vertical_correction
+function getMixerHeight()
+   local hWnd_array = reaper.new_array({}, 100)
+   reaper.JS_Window_ArrayFind("REAPER_dock", true, hWnd_array) -- side effect on hWnd_array
+   dock = hWnd_array.table()
+   
+   if (#dock) == 0 then
+      return 0
+   end
+
+   local hwnd = reaper.JS_Window_HandleFromAddress(dock[mixer_id])
+   local _, _, top, _, bottom = reaper.JS_Window_GetClientRect(hwnd) 
+
+   return bottom - top -- 515. but this value may change
+end
+
+-- function getHardcodedPos(window_height)
+--    -- needs hardcoded values to update dock popup/hide state
+--    trigger_height = math.floor(window_height * trigger_height_ratio) -- 900
+--    mixer_height = math.floor(window_height * mixer_height_ratio) -- 425
+--    vertical_correction = math.floor(window_height * vertical_correction_ratio) -- 350
+--    return trigger_height, mixer_height, vertical_correction
+-- end
+
+function getKeyPos(window_height, mixer_height)
+   -- corner case: use math.min() if the window is not fullscreen. I am maybe too cautious 
+   trigger_height = math.min(math.floor(mixer_height * 1.5) + window_height * .1, window_height)
+   vertical_correction = math.floor((window_height - mixer_height) / 2)
+   return trigger_height, vertical_correction
 end
 
 function isMainWindowFocused()
@@ -77,12 +101,21 @@ function updateMixer()
       return nil
    end
 
-   x, y = reaper.GetMousePosition()
-   state = reaper.GetToggleCommandState(40078)
-   
-   window_height = GetClientBounds(reaper.GetMainHwnd()) -- full = v(70, 1076)
-   trigger_height, mixer_height, vertical_correction = getKeyPos(window_height)
+   mixer_height = getMixerHeight()
 
+   if mixer_height == 0 then
+      reaper.defer(updateMixer)
+      reaper.ShowConsoleMsg("\nMixer height 0")
+      return nil
+   end
+
+   x, y = reaper.GetMousePosition()
+   window_height = GetClientBounds(reaper.GetMainHwnd()) -- full = v(70, 1076)
+   state = reaper.GetToggleCommandState(40078)
+
+   -- trigger_height, mixer_height, vertical_correction = getHardcodedPos(window_height)
+   trigger_height, vertical_correction = getKeyPos(window_height, mixer_height)
+   
    if isMainWindowFocused() ~= true then
       -- intentional behaviour: "pause" dock state if mouse outside main window
       reaper.defer(updateMixer)
@@ -102,6 +135,14 @@ function updateMixer()
    reaper.defer(updateMixer)
 end
 
-SetCommandState(1)
-updateMixer()
-reaper.atexit(SetCommandState)
+-- -------------------- --
+--    [[ MAIN FUNC ]]   --
+-- -------------------- --
+
+function main()
+   SetCommandState(1)
+   updateMixer()
+   reaper.atexit(SetCommandState)
+end
+
+main()
