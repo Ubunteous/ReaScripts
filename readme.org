@@ -1,13 +1,11 @@
-My reaper scripts.
-
-* auto_show
+* Audo HideShow Mixer
 
 auto_show: show or hide the mixer depending on the mouse position. Will eventually be improved to work with other docks.
 
 I recommend using it at startup with a __startup.lua file:
 
 #+begin_src lua
-reaper.Main_OnCommand(reaper.NamedCommandLookup("_RS577fcf76709d792f67eb1bfeb44a3f25693316a7"), -1)
+reaper.Main_OnCommand(reaper.NamedCommandLookup("_RS516fb6efb5007181c1c681adc8ad48f09bdf0c04"), -1)
 #+end_src
 
 Note: this is a work in progress. It currently uses hard coded values at the top of the script to determine when to toggle the mixer's state. If your monitor has dimensions which differ from mine, you may wish to manually edit the variables at the top of the file.
