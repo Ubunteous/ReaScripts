@@ -24,10 +24,10 @@ function sleep(n)
 
    if new_time - last_time >= n then
       last_time = new_time
-      return true
+      return false
    end
 
-   return false
+   return true
 end
 
 function SetCommandState(set)
@@ -72,7 +72,7 @@ end
 
 function updateMixer()
    -- toggle the mixer's visibility
-   if not sleep(refresh_delay) then
+   if sleep(refresh_delay) then
       reaper.defer(updateMixer)
       return nil
    end
