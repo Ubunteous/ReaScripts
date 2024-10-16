@@ -10,7 +10,7 @@ local last_time = start_time
 local refresh_delay = .75 -- in seconds
 
 -- my bottom dock. this id may differ for other people
-local mixer_id = 2
+-- local mixer_id = 1 -- this value changes sometimes. A hack in main() finds it automatically
 local mixer_command_id = 40078
 
 local CLOSED = 0
@@ -33,12 +33,14 @@ function sleep(n)
 end
 
 function setCommandState(set)
+   -- on/off
    local is_new_value, filename, sec, cmd, mode, resolution, val = reaper.get_action_context()
    reaper.SetToggleCommandState(sec, cmd, set or 0)
    -- reaper.RefreshToolbar2(sec, cmd)
 end
 
-function getClientBounds(hwnd)
+function getClientHeight(hwnd)
+   -- the client refers to reaper's main window
    local ret, left, top, right, bottom = reaper.JS_Window_GetClientRect(hwnd)
    return bottom-top -- , top, bottom
 end
@@ -64,6 +66,7 @@ function getMonitorHeight()
 end
 
 function getKeyPos(window_height, mixer_height)
+   -- y coordinates which change the mixer's visibility + a correction to bump the mouse up
    -- corner case: use math.min() if the window is not fullscreen. I am maybe too cautious
    local trigger_open_height = math.min(math.floor(mixer_height * 1.75) + window_height * .05, window_height)
    local trigger_close_height = math.floor(mixer_height - window_height * .075)
@@ -91,16 +94,31 @@ function isMainWindowFocused()
    return nil
 end
 
-function updateMixer()
+function hack_get_mixer_id(mixer_command_id)
+   -- hack: force the dock to appear once as JS_Window_ArrayFind fails otherwise on app startup
+   if reaper.GetToggleCommandState(mixer_command_id) == CLOSED then
+      reaper.Main_OnCommand(mixer_command_id, 0)
+      reaper.Main_OnCommand(mixer_command_id, 0)
+   end
+
+   -- hack: the mixer dock is always the last of the list
+   local hWnd_array = reaper.new_array({}, 100)
+   reaper.JS_Window_ArrayFind("REAPER_dock", true, hWnd_array)
+   mixer_id = #hWnd_array
+   
+   return mixer_id
+end
+
+function updateMixerVisibility()
    -- auto toggle the mixer's visibility
    if sleep(refresh_delay) then
-      reaper.defer(updateMixer)
+      reaper.defer(updateMixerVisibility)
       return nil
    end
    
    if not isMainWindowFocused() then
       -- intentional behaviour: "pause" dock state if mouse outside main window
-      reaper.defer(updateMixer)
+      reaper.defer(updateMixerVisibility)
       return nil
    end
 
@@ -114,12 +132,12 @@ function updateMixer()
       end
 
       -- reaper.ShowConsoleMsg("\nMixer height too small for monitor: " .. mixer_height .. " vs " .. monitor_height)
-      reaper.defer(updateMixer)
+      reaper.defer(updateMixerVisibility)
       return nil
    end
    
    local mouse_x, mouse_y = reaper.GetMousePosition()
-   local window_height = getClientBounds(reaper.GetMainHwnd()) -- full = v(70, 1076)
+   local window_height = getClientHeight(reaper.GetMainHwnd()) -- full = v(70, 1076)
    local trigger_open_height, trigger_close_height, vertical_correction = getKeyPos(window_height, mixer_height)
 
    if mixer_state == CLOSED and mouse_y > trigger_open_height then
@@ -132,19 +150,15 @@ function updateMixer()
    -- for tests only
    -- if reaper.time_precise() - startclocktime >= script_duration then return end
    
-   reaper.defer(updateMixer)
+   reaper.defer(updateMixerVisibility)
 end
 
 function main()
-   -- hack: force the dock to appear once as JS_Window_ArrayFind fails otherwise on app startup
-   if reaper.GetToggleCommandState(mixer_command_id) == CLOSED then
-      reaper.Main_OnCommand(mixer_command_id, 0)
-      reaper.Main_OnCommand(mixer_command_id, 0)
-   end
-   
+   mixer_id = hack_get_mixer_id(mixer_command_id)
+   reaper.ShowConsoleMsg("\n" .. tostring(mixer_id))
    setCommandState(1)
    monitor_height = getMonitorHeight() -- if I make it local, I will need to poll it frequently
-   updateMixer()
+   updateMixerVisibility()
    reaper.atexit(setCommandState)
 end
 
