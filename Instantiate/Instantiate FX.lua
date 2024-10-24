@@ -25,3 +25,8 @@ function instantiateFX(FX)
 
    reaper.TrackFX_AddByName(track, FX, false, -1) -- example: "CLAP:Hive"
 end
+
+-- USE THIS SCRIPT BY CREATING A NEW FILE IN THE SAME DIR WITH THIS CONTENT:
+-- local ScriptPath = ({reaper.get_action_context()})[2]:match('^.+[\\//]')
+-- dofile(ScriptPath .. 'Instantiate FX.lua')
+-- instantiateFX("CLAP:Hive")
