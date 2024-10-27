@@ -76,4 +76,6 @@ else
    reaper.SetTrackSelected(last_track, true)
 end
 
+-- Foreign_OnCommand("_XENAKIOS_RENAMETRAXDLG") -- Rename selected track
+
 reaper.Undo_EndBlock("Script: Track Inserted", 0)
