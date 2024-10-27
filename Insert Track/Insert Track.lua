@@ -13,7 +13,7 @@ function update_folder_color(new_track)
 
    -- Script ICIO set color gradient to children tracks starting from parent color
    Foreign_OnCommand("_RSbf2bd246be433097ca27eb29844c243b636a3747")
-
+   
    reaper.SetOnlyTrackSelected(new_track, false)
 end
 
@@ -49,18 +49,17 @@ end
 
 reaper.Undo_BeginBlock()
 
--- insert at folder bottom if folder selected
--- or insert after selection
--- or insert at the very end if nothing is selected
 nb_selected_tracks = reaper.CountSelectedTracks(0)
 if nb_selected_tracks > 0 then
    last_track_in_selection = reaper.GetSelectedTrack(0, nb_selected_tracks - 1)
 
    if reaper.GetMediaTrackInfo_Value(last_track_in_selection, "I_FOLDERDEPTH") == 1 then
+      -- insert at folder bottom if folder selected
       last_child_idx = get_last_child_in_folder(last_track_in_selection)
       reaper.Main_OnCommand(40001, 0) -- Track: Insert new track
       reaper.ReorderSelectedTracks(last_child_idx, 2)
    else
+      -- or insert after selection
       reaper.Main_OnCommand(40001, 0) -- Track: Insert new track
    end
 
@@ -69,7 +68,12 @@ if nb_selected_tracks > 0 then
    new_track_has_parent = reaper.GetTrackDepth(new_track) == 1 -- reaper.GetParentTrack(new_track) and true
    if new_track_has_parent then update_folder_color(new_track) end
 else
-   reaper.InsertTrackAtIndex(reaper.GetNumTracks(), false)
+   -- or insert at the very end and select last track if nothing is selected
+   nb_tracks = reaper.GetNumTracks()
+   reaper.InsertTrackAtIndex(nb_tracks, false)
+
+   last_track = reaper.GetTrack(0, nb_tracks)
+   reaper.SetTrackSelected(last_track, true)
 end
 
 reaper.Undo_EndBlock("Script: Track Inserted", 0)
