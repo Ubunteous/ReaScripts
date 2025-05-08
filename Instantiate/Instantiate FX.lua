@@ -1,5 +1,6 @@
-function instantiateFX(FX)
+function insertFX(FX)
    -- Insert a plugin in the last track selected (or a new Onega)
+   reaper.Undo_BeginBlock()
 
    nb_selected_tracks = reaper.CountSelectedTracks(0)
 
@@ -9,8 +10,8 @@ function instantiateFX(FX)
 
       -- insert on every track selected
       for nth_track = 0, nb_selected_tracks - 1 do
-	 track = reaper.GetSelectedTrack(0, nth_track)
-	 reaper.TrackFX_AddByName(track, FX, false, -1)
+		 track = reaper.GetSelectedTrack(0, nth_track)
+		 reaper.TrackFX_AddByName(track, FX, false, -1)
       end
       return 0
    else
@@ -24,6 +25,13 @@ function instantiateFX(FX)
    end
 
    reaper.TrackFX_AddByName(track, FX, false, -1) -- example: "CLAP:Hive"
+   reaper.Undo_EndBlock("Script: Instantiate " .. FX, 0)
+end
+
+function GetFileName()
+   local source = debug.getinfo(2, "S").source
+   source = source:match("[^/]*.lua$")
+   return source:sub(13, #source - 4)
 end
 
 -- USE THIS SCRIPT BY CREATING A NEW FILE IN THE SAME DIR WITH THIS CONTENT:
