@@ -155,7 +155,6 @@ end
 
 function main()
    mixer_id = hack_get_mixer_id(mixer_command_id)
-   reaper.ShowConsoleMsg("\n" .. tostring(mixer_id))
    setCommandState(1)
    monitor_height = getMonitorHeight() -- if I make it local, I will need to poll it frequently
    updateMixerVisibility()
