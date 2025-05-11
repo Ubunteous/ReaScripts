@@ -1,3 +1,11 @@
+function insertFXOnTrack(track, FX)
+   result = reaper.TrackFX_AddByName(track, FX, false, -1)
+
+   if result == -1 then
+	  reaper.ShowConsoleMsg("Plugin " .. FX .. " not installed. Could not be inserted on track")
+   end
+end
+
 function insertFX(FX)
    -- Insert a plugin in the last track selected (or a new Onega)
    reaper.Undo_BeginBlock()
@@ -11,7 +19,7 @@ function insertFX(FX)
       -- insert on every track selected
       for nth_track = 0, nb_selected_tracks - 1 do
 		 track = reaper.GetSelectedTrack(0, nth_track)
-		 reaper.TrackFX_AddByName(track, FX, false, -1)
+		 insertFXOnTrack(track, FX)
       end
       return 0
    else
@@ -24,7 +32,10 @@ function insertFX(FX)
       track = reaper.GetTrack(0, nb_tracks)
    end
 
-   reaper.TrackFX_AddByName(track, FX, false, -1) -- example: "CLAP:Hive"
+   msg("Track: " .. track)
+   -- example: "CLAP:Hive"
+   -- insertFXOnTrack(track, FX)
+   
    reaper.Undo_EndBlock("Script: Instantiate " .. FX, 0)
 end
 
