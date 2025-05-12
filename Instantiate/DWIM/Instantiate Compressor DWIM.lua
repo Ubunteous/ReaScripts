@@ -41,4 +41,5 @@ if track then
    end
 
    insertFX(compression[track_type][complexity])
+   ShowLastTrackFX(track)
 end

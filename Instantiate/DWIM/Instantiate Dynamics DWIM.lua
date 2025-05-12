@@ -37,4 +37,5 @@ if track then
    end
 
    insertFX(dynamic[track_type][complexity])
+   ShowLastTrackFX(track)
 end

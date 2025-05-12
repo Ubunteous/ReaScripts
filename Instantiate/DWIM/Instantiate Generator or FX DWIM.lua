@@ -15,16 +15,23 @@ function Foreign_OnCommand(cmd_name)
    reaper.Main_OnCommand(cmd_id, 0)
 end
 
-local track = select_single_track()
+reaper.Undo_BeginBlock()
 
-local insert_generator = is_generator(track)
+function SmartInsert()
+   local track = select_single_track()
+   local insert_generator = is_generator(track)
 
-if track then
-   if insert_generator then
-	  -- insert instrument menu + tal sampler/drums
-	  Foreign_OnCommand("_RS266f56e72233f9832712ba485d8dddad7292f9c5")
-   else
-	  -- insert FX menu + reeq
-	  Foreign_OnCommand("_RSa57a6af7934690db1f5d5385ca140d51149949c9")
+   if track then
+	  if insert_generator then
+		 -- insert instrument menu + tal sampler/drums
+		 Foreign_OnCommand("_RS266f56e72233f9832712ba485d8dddad7292f9c5")
+	  else
+		 -- insert FX menu + reeq
+		 Foreign_OnCommand("_RSa57a6af7934690db1f5d5385ca140d51149949c9")
+	  end
    end
 end
+
+SmartInsert()
+
+reaper.Undo_EndBlock("Script: Instantiate Generator or FX DWIM ", 0)

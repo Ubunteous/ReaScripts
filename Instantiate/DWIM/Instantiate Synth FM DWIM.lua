@@ -21,4 +21,5 @@ complexity = Translate_Complexity(complexity, "Generator")
 
 if track then
    insertFX(synth[complexity])
+   reaper.TrackFX_Show(track, 0, 1)
 end

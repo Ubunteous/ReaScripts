@@ -86,3 +86,7 @@ function Translate_Complexity(complexity, insertion_type)
 
    return complexity
 end
+
+function ShowLastTrackFX(track)
+   reaper.TrackFX_Show(track, reaper.TrackFX_GetCount(track), 1)
+end

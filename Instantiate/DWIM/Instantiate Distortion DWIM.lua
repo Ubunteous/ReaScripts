@@ -28,4 +28,5 @@ if track then
    end
 
    insertFX(distortion[track_type])
+   ShowLastTrackFX(track)
 end
