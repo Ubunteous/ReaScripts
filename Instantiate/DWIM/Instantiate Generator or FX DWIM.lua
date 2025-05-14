@@ -15,6 +15,17 @@ function Foreign_OnCommand(cmd_name)
    reaper.Main_OnCommand(cmd_id, 0)
 end
 
+-- function getClientDimensions(hwnd)
+--    -- the client refers to reaper's main window
+--    local ret, left, top, right, bottom = reaper.JS_Window_GetClientRect(hwnd)
+--    return bottom-top, right-left
+-- end
+
+function getMonitorDimensions()
+   local _, _, monitor_right, monitor_bottom = reaper.JS_Window_MonitorFromRect(0, 0, 0, 0, false)
+   return monitor_right, monitor_bottom -- 1920-1080
+end
+
 reaper.Undo_BeginBlock()
 
 function SmartInsert()
@@ -32,6 +43,8 @@ function SmartInsert()
    end
 end
 
+width, height = getMonitorDimensions()
+reaper.JS_Mouse_SetPosition(width // 3, height // 4)
 SmartInsert()
 
 reaper.Undo_EndBlock("Script: Instantiate Generator or FX DWIM ", 0)
