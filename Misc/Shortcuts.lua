@@ -1,15 +1,22 @@
 function GetActionsWithShortcut()
    local i, t = 0, {}
+   local section = 32060
 
    while true do
-	  local cmdID, cmdName = reaper.kbd_enumerateActions(0, i)
+	  -- 0 - Main
+	  -- 100 - Main (alt recording)
+	  -- 32060 - MIDI Editor
+	  -- 32061 - MIDI Event List Editor
+	  -- 32062 - MIDI Inline Editor
+	  -- 32063 - Media Explorer
+	  local cmdID, cmdName = reaper.kbd_enumerateActions(section, i)
 	  i = i + 1
 
 	  if cmdID == 0 then
 		 break
 	  end
 
-	  if reaper.CountActionShortcuts(0, cmdID) ~= 0 then
+	  if reaper.CountActionShortcuts(section, cmdID) ~= 0 then
 		 t[#t+1] = string.format("%i) %s [ID: %s]", i, cmdName, cmdID)
 	  end
    end
