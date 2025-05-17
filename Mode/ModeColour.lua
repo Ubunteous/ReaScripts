@@ -30,29 +30,9 @@ local colours = {
 
 local alts = {
    clear = 24800,
+
    -- set_default = 24801,
-   -- momentary_default = 24851,
-
-   momentary_recording = 24852,
    toggle_recording = 24802,
-
-   momentary_alt1 = 24853,
-   -- momentary_alt2 = 24854,
-   -- momentary_alt3 = 24855,
-   -- momentary_alt4 = 24856,
-   -- momentary_alt5 = 24857,
-   -- momentary_alt6 = 24858,
-   -- momentary_alt7 = 24859,
-   -- momentary_alt8 = 24860,
-   -- momentary_alt9 = 24861,
-   -- momentary_alt10 = 24862,
-   -- momentary_alt11 = 24863,
-   -- momentary_alt12 = 24864,
-   -- momentary_alt13 = 24865,
-   -- momentary_alt14 = 24866,
-   -- momentary_alt15 = 24867,
-   -- momentary_alt16 = 24868,
-
    toggle_alt1 = 24803,
    -- toggle_alt2 = 24804,
    -- toggle_alt3 = 24805,
@@ -69,9 +49,28 @@ local alts = {
    -- toggle_alt14 = 24816,
    -- toggle_alt15 = 24817,
    -- toggle_alt16 = 24818,
+
+   momentary_default = 24851,
+   momentary_recording = 24852,
+   momentary_alt1 = 24853,
+   -- momentary_alt2 = 24854,
+   -- momentary_alt3 = 24855,
+   -- momentary_alt4 = 24856,
+   -- momentary_alt5 = 24857,
+   -- momentary_alt6 = 24858,
+   -- momentary_alt7 = 24859,
+   -- momentary_alt8 = 24860,
+   -- momentary_alt9 = 24861,
+   -- momentary_alt10 = 24862,
+   -- momentary_alt11 = 24863,
+   -- momentary_alt12 = 24864,
+   -- momentary_alt13 = 24865,
+   -- momentary_alt14 = 24866,
+   -- momentary_alt15 = 24867,
+   -- momentary_alt16 = 24868,
 }
 
-function ChangeColour(colour, alt, is_temp)
+function ChangeColour(colour, alt)
    delay = 1
    time_start = reaper.time_precise()
 
@@ -80,7 +79,7 @@ function ChangeColour(colour, alt, is_temp)
    reaper.SetThemeColor("col_tl_fg", colours[colour], 0)
    reaper.UpdateTimeline()
 
-   if is_temp then
+   if alts[alt] > alts["momentary_default"] then
 	  ResetColourAfterDelay()
    end
 end
