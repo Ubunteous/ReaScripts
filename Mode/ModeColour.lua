@@ -9,24 +9,32 @@ function ResetColourAfterDelay()
 end
 
 -- catpuccin theme
+-- local colours = {
+--    red = 15566742,
+--    rowewater = 16047062,
+--    flamingo = 15779526,
+--    pink = 16104934,
+--    mauve = 13017334,
+--    red = 15566742,
+--    maroon = 15636896,
+--    peach = 1604011814,
+--    yellow = 15651999,
+--    green = 10934933,
+--    teal = 9164234,
+--    sky = 9557987,
+--    sapphire = 8242404,
+--    blue = 9088500,
+--    lavender = 12041720,
+--    text = 13292533
+-- }
+
 local colours = {
-   red = 15566742,
-   rowewater = 16047062,
-   flamingo = 15779526,
-   pink = 16104934,
-   mauve = 13017334,
-   red = 15566742,
-   maroon = 15636896,
-   peach = 1604011814,
-   yellow = 15651999,
-   green = 10934933,
-   teal = 9164234,
-   sky = 9557987,
-   sapphire = 8242404,
-   blue = 9088500,
-   lavender = 12041720,
-   text = 13292533
+   clear = 0,
+   default = 0,
+   recording = 9164234, -- teal
+   alt1 = 15566742, -- red
 }
+   
 
 local alts = {
    clear = 24800,
@@ -70,16 +78,30 @@ local alts = {
    -- momentary_alt16 = 24868,
 }
 
-function ChangeColour(colour, alt)
+function KeepLastSplit(inputstr)
+   local sep = '_'
+
+   for field, s in string.gmatch(inputstr, "([^"..sep.."]*)("..sep.."?)") do
+	  if s == "" then
+		 return field
+	  end
+   end
+end
+
+function OverrideWithColour(alt)
    delay = 1
    time_start = reaper.time_precise()
 
    reaper.Main_OnCommand(alts[alt], 0)
-   
-   reaper.SetThemeColor("col_tl_fg", colours[colour], 0)
-   reaper.UpdateTimeline()
 
-   if alts[alt] > alts["momentary_default"] then
-	  ResetColourAfterDelay()
+   local alt_target = KeepLastSplit(alt)
+   if alt_target ~= "clear" and alt_target ~= "default" then
+	  reaper.SetThemeColor("col_tl_fg", colours[alt_target], 0)
+	  reaper.UpdateTimeline()
+
+	  -- for momentary actions
+	  if alts[alt] > alts["momentary_default"] then
+		 ResetColourAfterDelay()
+	  end
    end
 end
