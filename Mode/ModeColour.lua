@@ -1,13 +1,3 @@
-function ResetColourAfterDelay()
-   local elapsed = reaper.time_precise() - time_start
-   if elapsed < delay then
-	  reaper.defer(ResetColourAfterDelay)
-   else
-	  reaper.SetThemeColor("col_tl_fg", -1, 0)
-	  reaper.UpdateTimeline()
-   end
-end
-
 -- catpuccin theme
 -- local colours = {
 --    red = 15566742,
@@ -34,7 +24,6 @@ local colours = {
    recording = 9164234, -- teal
    alt1 = 15566742, -- red
 }
-   
 
 local alts = {
    clear = 24800,
@@ -88,10 +77,29 @@ function KeepLastSplit(inputstr)
    end
 end
 
+function ResetColourAfterDelay()
+   local elapsed = reaper.time_precise() - time_start
+   if elapsed < delay then
+	  reaper.defer(ResetColourAfterDelay)
+	  -- new attempts for 5 seconds (add check if no input detected if necessary)
+	  -- elseif attempts > 0 then
+	  -- 	  attempts = attempts - 1
+	  -- 	  time_start = reaper.time_precise()
+	  -- 	  reaper.defer(ResetColourAfterDelay)
+	  -- 	  reaper.Main_OnCommand(alts[global_alt], 0)
+   else
+	  reaper.SetThemeColor("col_tl_fg", -1, 0)
+	  reaper.UpdateTimeline()
+   end
+end
+
 function OverrideWithColour(alt)
    delay = 1
    time_start = reaper.time_precise()
 
+   -- attempts = 5
+   -- global_alt = alt
+   
    reaper.Main_OnCommand(alts[alt], 0)
 
    local alt_target = KeepLastSplit(alt)
