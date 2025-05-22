@@ -32,7 +32,7 @@ local colours = {
 local alts = {
    clear = 24800,
 
-   -- set_default = 24801,
+   set_default = 24801,
    toggle_recording = 24802,
    toggle_alt1 = 24803,
    -- toggle_alt2 = 24804,
@@ -71,18 +71,12 @@ local alts = {
    momentary_alt16 = 24868,
 }
 
-function msg(str) reaper.ShowConsoleMsg(str) end
-
-function teardown()
-   reaper.SetThemeColor("col_tl_fg", -1, 0)
-   reaper.UpdateTimeline()
-
-   if startOverrideID ~= nil then
-	  reaper.Main_OnCommand(startOverrideID, 0)
-   else
-	  msg("Error: startOverrideID not set in script calling ModeColour")
-   end
+local numericalAlts = {}
+for key, value in pairs(alts) do
+   numericalAlts[value] = key
 end
+
+function msg(str) reaper.ShowConsoleMsg(str) end
 
 function GetCurrentOverride()
    for i = 24803, 24818 do
@@ -122,15 +116,6 @@ function ResetColourAfterDelay()
    end
 end
 
-function ActAfterDelay()
-   local elapsed = reaper.time_precise() - time_start
-   if elapsed < delay then
-	  reaper.defer(ActAfterDelay)
-   else
-	  teardown()
-   end
-end
-
 function OverrideWithColour(alt)
    -- time_start = reaper.time_precise()
    -- attempts = 5
@@ -147,5 +132,26 @@ function OverrideWithColour(alt)
 	  if alts[alt] > alts["momentary_default"] then
 		 ResetColourAfterDelay()
 	  end
+   end
+end
+
+function teardown()
+   reaper.SetThemeColor("col_tl_fg", -1, 0)
+   reaper.UpdateTimeline()
+
+   if startOverrideID ~= nil then
+	  -- reaper.Main_OnCommand(startOverrideID, 0)
+	  OverrideWithColour(numericalAlts[startOverrideID])
+   else
+	  msg("Error: startOverrideID not set in script calling ModeColour")
+   end
+end
+
+function ActAfterDelay()
+   local elapsed = reaper.time_precise() - time_start
+   if elapsed < delay then
+	  reaper.defer(ActAfterDelay)
+   else
+	  teardown()
    end
 end
