@@ -18,11 +18,15 @@
 --    text = 13292533
 -- }
 
+local delay = 1
+local time_start = reaper.time_precise()
+
 local colours = {
    clear = 0,
    default = 0,
    recording = 9164234, -- teal
    alt1 = 15566742, -- red
+   alt16 = 10934933, -- green
 }
 
 local alts = {
@@ -45,7 +49,7 @@ local alts = {
    -- toggle_alt13 = 24815,
    -- toggle_alt14 = 24816,
    -- toggle_alt15 = 24817,
-   -- toggle_alt16 = 24818,
+   toggle_alt16 = 24818,
 
    momentary_default = 24851,
    momentary_recording = 24852,
@@ -64,8 +68,33 @@ local alts = {
    -- momentary_alt13 = 24865,
    -- momentary_alt14 = 24866,
    -- momentary_alt15 = 24867,
-   -- momentary_alt16 = 24868,
+   momentary_alt16 = 24868,
 }
+
+function msg(str) reaper.ShowConsoleMsg(str) end
+
+function teardown()
+   reaper.SetThemeColor("col_tl_fg", -1, 0)
+   reaper.UpdateTimeline()
+
+   if startOverrideID ~= nil then
+	  reaper.Main_OnCommand(startOverrideID, 0)
+   else
+	  msg("Error: startOverrideID not set in script calling ModeColour")
+   end
+end
+
+function GetCurrentOverride()
+   for i = 24803, 24818 do
+	  -- see Ex(alt-n, i) to choose alt
+	  if reaper.GetToggleCommandState(i) == 1 then
+		 -- msg("Alt-"..(i-24802).."\n")
+		 return i
+	  end
+   end
+
+   return 24801 -- default/clear
+end
 
 function KeepLastSplit(inputstr)
    local sep = '_'
@@ -93,13 +122,20 @@ function ResetColourAfterDelay()
    end
 end
 
-function OverrideWithColour(alt)
-   delay = 1
-   time_start = reaper.time_precise()
+function ActAfterDelay()
+   local elapsed = reaper.time_precise() - time_start
+   if elapsed < delay then
+	  reaper.defer(ActAfterDelay)
+   else
+	  teardown()
+   end
+end
 
+function OverrideWithColour(alt)
+   -- time_start = reaper.time_precise()
    -- attempts = 5
    -- global_alt = alt
-   
+
    reaper.Main_OnCommand(alts[alt], 0)
 
    local alt_target = KeepLastSplit(alt)

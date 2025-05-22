@@ -18,9 +18,6 @@
 -- Nums: 48-57
 -- Alpha: 65-90
 
-local state = reaper.JS_VKeys_GetState(0)
-local modifiers = reaper.JS_Mouse_GetState(tonumber("00011100", 2)) -- alt, shift, ctrl
-
 local modifiers_translate = {
    [0] = 1,
    [4] = 9,
@@ -30,12 +27,22 @@ local modifiers_translate = {
    [20] = 25,
 }
 
-function GetAsciiPressed()
+function msg(str) reaper.ShowConsoleMsg(str) end
+
+function GetAsciiPressed(state)
    -- nums: 48, 57
    -- alpha: 65, 90
-   
+
+   -- test
+   -- for i = 65, 90 do
+   -- 	  if state:byte(i) ~= nil and i ~= 72 then
+   -- 		 if state:byte(i) == 1 then reaper.ShowConsoleMsg("==> ") end
+   -- 		 msg(tostring(state:byte(i)).."\n")
+   -- 	  end
+   -- end
+
    -- don't start too low as some early ascii chars are intercepted by mistake
-   for i = 32, 512 do
+   for i = 65, 90 do
 	  if state:byte(i) == 1 then
 		 return i
 	  end
@@ -52,19 +59,25 @@ function ExecuteCommand(command)
    return result
 end
 
-local keyPressed = GetAsciiPressed()
+function ShowKeyBindings(keyPressed, modifiersPressed)
+   if keyPressed ~= -1 and modifiersPressed ~= nil then
+	  local command = 'grep "^KEY ' .. modifiersPressed .. " " .. keyPressed .. '" '
+		 .. reaper.GetResourcePath() .. '/reaper-kb.ini | awk \'{printf "+ ", $0; for(i=7;i<=NF;i++) printf "%s%s", $i, (i<NF ? OFS : ""); print ""}\''
+
+	  local output = ExecuteCommand(command)
+	  msg("Bindings:\n".. output)
+
+	  if (output == nil or output == "") then
+		 msg("Error. No match in reaper-kb.ini for:\n" .. command)
+	  end
+   else
+	  msg("Error. Unknown modifier or key press not in [0-9] nor [A-Z] ("..keyPressed.." and "..modifiersPressed..")")
+   end
+end
+
+local state = reaper.JS_VKeys_GetState(0)
+local keyPressed = GetAsciiPressed(state)
+local modifiers = reaper.JS_Mouse_GetState(tonumber("00011100", 2)) -- alt, shift, ctrl
 local modifiersPressed = modifiers_translate[modifiers]
 
-if keyPressed ~= -1 and modifiersPressed ~= nil then
-   local command = 'grep "^KEY ' .. modifiersPressed .. " " .. keyPressed .. '" '
-	  .. reaper.GetResourcePath() .. '/reaper-kb.ini | awk \'{printf "+ ", $0; for(i=7;i<=NF;i++) printf "%s%s", $i, (i<NF ? OFS : ""); print ""}\''
-
-   local output = ExecuteCommand(command)
-   reaper.ShowConsoleMsg("Bindings:\n".. output)
-
-   if (output == nil or output == "") then
-	  reaper.ShowConsoleMsg("Error. No match in reaper-kb.ini for:\n" .. command)
-   end
-else
-   reaper.ShowConsoleMsg("Error. Unknown modifier or key press not in [0-9] nor [A-Z]")
-end
+ShowKeyBindings(keyPressed, modifiersPressed)

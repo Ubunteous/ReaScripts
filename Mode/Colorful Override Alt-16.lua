@@ -1,4 +1,6 @@
 local libpath = reaper.GetResourcePath()..'/Scripts/mine/Mode/ModeColour.lua'
 dofile(libpath)
 
-OverrideWithColour("momentary_alt1")
+startOverrideID = GetCurrentOverride()
+OverrideWithColour("toggle_alt16")
+ActAfterDelay()
