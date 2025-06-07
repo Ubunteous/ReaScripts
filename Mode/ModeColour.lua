@@ -24,8 +24,9 @@ local time_start = reaper.time_precise()
 local colours = {
    clear = 0,
    default = 0,
-   recording = 9164234, -- teal
-   alt1 = 15566742, -- red
+   -- recording = 9164234, -- teal
+   -- alt1 = 15566742, -- red
+   alt15 = 9557987, -- sky
    alt16 = 10934933, -- green
 }
 
@@ -33,8 +34,8 @@ local alts = {
    clear = 24800,
 
    set_default = 24801,
-   toggle_recording = 24802,
-   toggle_alt1 = 24803,
+   -- toggle_recording = 24802,
+   -- toggle_alt1 = 24803,
    -- toggle_alt2 = 24804,
    -- toggle_alt3 = 24805,
    -- toggle_alt4 = 24806,
@@ -48,12 +49,12 @@ local alts = {
    -- toggle_alt12 = 24814,
    -- toggle_alt13 = 24815,
    -- toggle_alt14 = 24816,
-   -- toggle_alt15 = 24817,
+   toggle_alt15 = 24817,
    toggle_alt16 = 24818,
 
    momentary_default = 24851,
-   momentary_recording = 24852,
-   momentary_alt1 = 24853,
+   -- momentary_recording = 24852,
+   -- momentary_alt1 = 24853,
    -- momentary_alt2 = 24854,
    -- momentary_alt3 = 24855,
    -- momentary_alt4 = 24856,
@@ -135,7 +136,7 @@ function OverrideWithColour(alt)
    end
 end
 
-function teardown()
+function Teardown()
    reaper.SetThemeColor("col_tl_fg", -1, 0)
    reaper.UpdateTimeline()
 
@@ -143,6 +144,7 @@ function teardown()
 	  -- reaper.Main_OnCommand(startOverrideID, 0)
 	  OverrideWithColour(numericalAlts[startOverrideID])
    else
+	  OverrideWithColour(numericalAlts[startOverrideID])
 	  msg("Error: startOverrideID not set in script calling ModeColour")
    end
 end
@@ -152,6 +154,6 @@ function ActAfterDelay()
    if elapsed < delay then
 	  reaper.defer(ActAfterDelay)
    else
-	  teardown()
+	  Teardown()
    end
 end
