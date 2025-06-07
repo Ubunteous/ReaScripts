@@ -13,16 +13,19 @@ local track = select_single_track()
 
 local visuals = {
    ["Master"] = {
+	  ["Uhbik"] = "VST:TDR Prism",
 	  ["Single"] = "VST:TDR Prism",
 	  ["Simple"] = "VST:TDR Prism", -- or span
 	  ["Complex"] = "VST:MMultiAnalyzer"
    },
    ["Buss"] = {
+	  ["Uhbik"] = "VST:TDR Prism",
 	  ["Single"] = "VST:TDR Prism",
 	  ["Simple"] = "VST:VUMTdeluxe",
 	  ["Complex"] = "VST:VUMTdeluxe"
    },
    ["Track"] = {
+	  ["Uhbik"] = "VST:TDR Prism",
 	  ["Single"] = "VST:TDR Prism",
 	  ["Simple"] = "Youlean Loudness Meter 2",
 	  ["Complex"] = "VST:MCompare"

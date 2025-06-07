@@ -13,15 +13,18 @@ local track = select_single_track()
 
 local dynamic = {
    ["Master"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Single"] = "VST:TrackLimit",
 	  ["Simple"] = "VST:TrackLimit",
 	  ["Complex"] = "VST:TrackDS"
    },
    ["Buss"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Simple"] = "VST:TrackGate",
 	  ["Complex"] = "VST:Multiplicity"
    },
    ["Track"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Simple"] = "VST:TDR Limiter6 GE",
 	  ["Complex"] = "VST:Limitless"
    }

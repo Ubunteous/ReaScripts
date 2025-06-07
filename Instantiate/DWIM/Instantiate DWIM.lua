@@ -2,7 +2,8 @@
 -- [ VARIABLES ] --
 --------------------
 
-complexity = "Single"
+complexity = "Uhbik"
+-- complexity = "Single"
 -- complexity = "Simple"
 -- complexity_tri = "Mid"
 -- complexity = "Complex"
@@ -76,7 +77,7 @@ end
 
 function Translate_Complexity(complexity, insertion_type)
    -- Generators
-   if insertion_type == "Generator" and complexity == "Single" then
+   if insertion_type == "Generator" and (complexity == "Single" or complexity == "Uhbik") then
 	  return "Simple"
    end
 

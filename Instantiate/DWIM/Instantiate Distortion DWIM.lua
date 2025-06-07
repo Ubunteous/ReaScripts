@@ -12,6 +12,7 @@ local track_type = ""
 local track = select_single_track()
 
 local distortion = {
+   ["Uhbik"] = "CLAP:Uhbik Runciter",
    ["Single"] = "VST:SDRR",
    ["Master"] = "VST:SDRR",
    ["Buss"] = "VST:apShaper",

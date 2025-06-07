@@ -13,16 +13,19 @@ local track = select_single_track()
 
 local eq = {
    ["Master"] = {
+	  ["Uhbik"] = "CLAP:Uhbik EQ",
 	  ["Single"] = "JS:ReEQ",
 	  ["Simple"] = "VST:TDR SlickEQ GE",
 	  ["Complex"] = "VST:apQualizr"
    },
    ["Buss"] = {
+	  ["Uhbik"] = "CLAP:Uhbik EQ",
 	  ["Single"] = "JS:ReEQ",
 	  ["Simple"] = "VST:TDR Nova GE",
 	  ["Complex"] = "VST:MDynamicEQ"
    },
    ["Track"] = {
+	  ["Uhbik"] = "CLAP:Uhbik EQ",
 	  ["Single"] = "JS:ReEQ",
 	  ["Simple"] = "VST:TDR SlickEQ M GE",
 	  ["Complex"] = "VST:Equilibrium"

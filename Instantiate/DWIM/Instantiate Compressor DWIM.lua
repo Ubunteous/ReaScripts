@@ -13,16 +13,19 @@ local track = select_single_track()
 
 local compression = {
    ["Master"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Single"] = "VST:TrackComp",
 	  ["Simple"] = "VST:TDR Kotelnikov GE",
 	  ["Complex"] = "VST:TDR Molot GE"
    },
    ["Buss"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Single"] = "VST:TrackComp",
 	  ["Simple"] = "VST:MJUC",
 	  ["Complex"] = "CLAP:Presswerk"
    },
    ["Track"] = {
+	  ["Uhbik"] = "CLAP:Uhbik Compressor",
 	  ["Single"] = "VST:TrackComp",
 	  ["Simple"] = "VST:TrackComp",
 	  ["Complex"] = "VST:DC8C"
