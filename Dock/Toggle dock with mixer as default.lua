@@ -5,7 +5,8 @@ mixerDock = reaper.JS_Window_Find("Mixer", false)
 -- View: Show docker
 reaper.Main_OnCommand(40279, 0)
 
-if mixerDock == nil and ~reaper.GetToggleCommandState(40078) then
+-- View: Toggle mixer visible
+if mixerDock == nil and reaper.GetToggleCommandState(40078) == 0 then
    -- View: Toggle mixer visible
    reaper.Main_OnCommand(40078, 0)
 end
