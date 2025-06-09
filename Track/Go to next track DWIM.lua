@@ -1,46 +1,14 @@
-function msg(str) reaper.ShowConsoleMsg(tostring(str)) end
+local libpath = reaper.GetResourcePath()..'/Scripts/mine/Track/Go to track DWIM.lua'
+dofile(libpath)
 
 local nbTracks = reaper.CountTracks(0)
-
-if nbTracks == 0 then
-   return
-end
-
-local currentPanel
-
--- View: Toggle mixer visible
-if reaper.GetToggleCommandState(40078) == 1 then
-   currentPanel = "B_SHOWINMIXER"
-else
-   currentPanel = "B_SHOWINTCP"
-end
-
 local current_track = reaper.GetLastTouchedTrack()
-
-if reaper.GetMediaTrackInfo_Value(current_track, currentPanel) == 0 then
-   msg("Can't move from invisible track")
-   return
-end
+local currentPanel = getPanelType()
+if checkIfMotionPossible(nbTracks, current_track, currentPanel) == false then return end
 
 local idx_current_track = reaper.GetMediaTrackInfo_Value(current_track, "IP_TRACKNUMBER")
-local idx_first_visible_track
-local idx_last_visible_track
-
-for i = 0, nbTracks-1 do
-   local track_checked = reaper.GetTrack(0, i)
-   if reaper.GetMediaTrackInfo_Value(track_checked, currentPanel) == 1 then
-	  idx_first_visible_track = reaper.GetMediaTrackInfo_Value(track_checked, "IP_TRACKNUMBER")
-	  break
-   end
-end
-
-for i = nbTracks-1, 0, -1 do
-   local track_checked = reaper.GetTrack(0, i)
-   if reaper.GetMediaTrackInfo_Value(track_checked, currentPanel) == 1 then
-	  idx_last_visible_track = reaper.GetMediaTrackInfo_Value(track_checked, "IP_TRACKNUMBER")
-	  break
-   end
-end
+local idx_first_visible_track = getFirstVisibleTrack(nbTracks, currentPanel)
+local idx_last_visible_track = getLastVisibleTrack(nbTracks, currentPanel)
 
 if idx_current_track == idx_last_visible_track then
    reaper.SetOnlyTrackSelected(reaper.GetTrack(0, idx_first_visible_track-1), true)
