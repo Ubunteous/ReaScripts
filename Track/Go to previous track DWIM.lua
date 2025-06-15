@@ -27,4 +27,10 @@ else
 		 break
 	  end
    end
+
+   -- hack to move view to top
+   -- Track: Go to next track
+   reaper.Main_OnCommand(40285, 0)
+   -- Track: Go to previous track
+   reaper.Main_OnCommand(40286, 0)
 end
