@@ -5,7 +5,10 @@ local nbTracks = reaper.CountTracks(0)
 local current_track = reaper.GetLastTouchedTrack()
 local currentPanel = getPanelType()
 
-if checkIfMotionPossible(nbTracks, current_track, currentPanel) == false then return end
+if checkIfMotionPossible(nbTracks, current_track, currentPanel) == false then
+   if nbTracks > 0 then selectLastTrack(nbTracks) end
+   return
+end
 
 local idx_current_track = reaper.GetMediaTrackInfo_Value(current_track, "IP_TRACKNUMBER")
 local idx_first_visible_track = getFirstVisibleTrack(nbTracks, currentPanel)

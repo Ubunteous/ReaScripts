@@ -26,6 +26,12 @@ function checkIfMotionPossible(nbTracks, current_track, currentPanel)
    return true
 end
 
+function selectLastTrack(nbTracks)
+   if nbTracks ~= 0 then
+	  reaper.SetOnlyTrackSelected(reaper.GetTrack(0, nbTracks-1))
+   end
+end
+
 function getFirstVisibleTrack(nbTracks, currentPanel)
    for i = 0, nbTracks-1 do
 	  local track_checked = reaper.GetTrack(0, i)
