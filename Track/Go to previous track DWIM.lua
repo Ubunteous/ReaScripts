@@ -4,6 +4,7 @@ dofile(libpath)
 local nbTracks = reaper.CountTracks(0)
 local current_track = reaper.GetLastTouchedTrack()
 local currentPanel = getPanelType()
+
 if checkIfMotionPossible(nbTracks, current_track, currentPanel) == false then return end
 
 local idx_current_track = reaper.GetMediaTrackInfo_Value(current_track, "IP_TRACKNUMBER")
