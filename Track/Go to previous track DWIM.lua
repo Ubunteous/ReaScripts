@@ -12,12 +12,6 @@ local idx_last_visible_track = getLastVisibleTrack(nbTracks, currentPanel)
 
 if idx_current_track == idx_first_visible_track then
    reaper.SetOnlyTrackSelected(reaper.GetTrack(0, idx_last_visible_track-1), true)
-
-   -- hack to move view to top
-   -- Track: Go to previous track
-   reaper.Main_OnCommand(40286, 0)
-   -- Track: Go to next track
-   reaper.Main_OnCommand(40285, 0)
 else
    -- go to previous visible track in current panel
    for i = idx_current_track-2, 0, -1 do
@@ -27,10 +21,7 @@ else
 		 break
 	  end
    end
-
-   -- hack to move view to top
-   -- Track: Go to next track
-   reaper.Main_OnCommand(40285, 0)
-   -- Track: Go to previous track
-   reaper.Main_OnCommand(40286, 0)
 end
+
+-- Track: Vertical scroll selected tracks into view
+reaper.Main_OnCommand(40913, 0)
